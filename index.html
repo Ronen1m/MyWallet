@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>הארנק של אופיר</title>
+<meta name="theme-color" content="#1f6b4a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="הארנק של אופיר">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600;700&family=Assistant:wght@400;600;700&display=swap">
+<style>
+/* Layout: one centered column — yield chip pinned top-left, balance as the hero, two actions, collapsible ledger */
+:root {
+  --bg: #f3f5f1;
+  --surface: #ffffff;
+  --line: #dde3db;
+  --fg: #16211c;
+  --muted: #5d6b63;
+  --accent: #1f6b4a;
+  --accent-ink: #ffffff;
+  --in: #1f7a4d;
+  --out: #b23a2e;
+  --scrim: rgba(16, 24, 20, .45);
+  --font-num: "Rubik", "Assistant", system-ui, sans-serif;
+  --font-body: "Assistant", "Rubik", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #101613; --surface: #18201c; --line: #2a352f; --fg: #e8eee9; --muted: #98a69e;
+    --accent: #4fb684; --accent-ink: #0c1410; --in: #5cc690; --out: #ef7d70; --scrim: rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #101613; --surface: #18201c; --line: #2a352f; --fg: #e8eee9; --muted: #98a69e;
+  --accent: #4fb684; --accent-ink: #0c1410; --in: #5cc690; --out: #ef7d70; --scrim: rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); background: var(--bg); -webkit-text-size-adjust: 100%; }
+body { margin: 0; }
+[hidden] { display: none !important; }
+body {
+  background: var(--bg); color: var(--fg);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 16px 40px;
+}
+.app { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+.top { display: flex; justify-content: space-between; align-items: center; direction: ltr; }
+.chip {
+  display: inline-flex; align-items: center; gap: 8px; direction: rtl;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 14px; font: 600 15px var(--font-num); color: var(--fg); cursor: pointer;
+}
+.chip small { font: 400 13px var(--font-body); color: var(--muted); }
+.chip:hover { border-color: var(--accent); }
+.brand { display: inline-flex; align-items: center; gap: 10px; font: 700 clamp(20px, 5.5vw, 26px)/1.1 var(--font-num); color: var(--fg); direction: rtl; }
+.brand-icon { width: 44px; height: 44px; flex: none; border-radius: 13px; background: var(--accent); display: grid; place-items: center; box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 30%, transparent); }
+.brand-icon svg { width: 28px; height: 28px; }
+
+.hero { text-align: center; display: flex; flex-direction: column; gap: 6px; padding-block: 24px 4px; }
+.hero .label { font-size: 14px; color: var(--muted); letter-spacing: .02em; }
+.balance {
+  font: 700 clamp(44px, 13vw, 68px)/1.05 var(--font-num); font-variant-numeric: tabular-nums;
+  direction: ltr; letter-spacing: -.01em; overflow-wrap: anywhere;
+}
+.balance .cur { font-size: .55em; font-weight: 500; color: var(--muted); margin-inline-end: 6px; }
+.balance.neg { color: var(--out); }
+.sub { font-size: 14px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.sub b { color: var(--in); font-weight: 600; }
+
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn {
+  font: 600 17px var(--font-body); border-radius: 14px; padding: 14px 12px; cursor: pointer;
+  border: 1px solid transparent; display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn .sym { font: 600 22px/1 var(--font-num); }
+.btn-in { background: var(--accent); color: var(--accent-ink); }
+.btn-out { background: var(--surface); color: var(--out); border-color: var(--line); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn:focus-visible, .chip:focus-visible, summary:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+details.ledger { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; }
+details.ledger summary {
+  list-style: none; cursor: pointer; padding: 14px 18px; display: flex; justify-content: space-between; align-items: center;
+  font-weight: 700; font-size: 16px;
+}
+details.ledger summary::-webkit-details-marker { display: none; }
+summary .meta { font-weight: 400; color: var(--muted); font-size: 14px; display: flex; gap: 8px; align-items: center; }
+summary .caret { transition: transform .2s; display: inline-block; }
+details[open] summary .caret { transform: rotate(180deg); }
+.totals { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border-top: 1px solid var(--line); }
+.totals div { background: var(--surface); padding: 10px 18px; font-size: 13px; color: var(--muted); }
+.totals strong { display: block; font: 600 17px var(--font-num); font-variant-numeric: tabular-nums; direction: ltr; text-align: right; }
+.totals .t-in strong { color: var(--in); } .totals .t-out strong { color: var(--out); }
+ul.rows { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+ul.rows li { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; padding: 12px 18px; border-bottom: 1px solid var(--line); }
+ul.rows li:last-child { border-bottom: 0; }
+.r-note { font-weight: 600; min-width: 0; overflow-wrap: anywhere; }
+.r-date { font-size: 13px; color: var(--muted); grid-column: 1; }
+.r-amt { font: 600 16px var(--font-num); font-variant-numeric: tabular-nums; direction: ltr; grid-row: 1 / span 2; grid-column: 2; align-self: center; }
+.r-amt.in { color: var(--in); } .r-amt.out { color: var(--out); }
+.r-kind { font-size: 12px; font-weight: 600; padding: 1px 8px; border-radius: 999px; margin-inline-start: 6px; vertical-align: 1px; }
+.r-kind.in { background: color-mix(in srgb, var(--in) 14%, transparent); color: var(--in); }
+.r-kind.out { background: color-mix(in srgb, var(--out) 14%, transparent); color: var(--out); }
+.empty { padding: 22px 18px; color: var(--muted); text-align: center; border-top: 1px solid var(--line); }
+.note { font-size: 13px; color: var(--muted); text-align: center; }
+.status { font-size: 13px; color: var(--out); text-align: center; }
+
+/* modal */
+.scrim { position: fixed; inset: 0; background: var(--scrim); display: flex; align-items: flex-end; justify-content: center; z-index: 20;
+  padding: 16px max(16px, env(safe-area-inset-right, 0px)) calc(16px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+@media (min-width: 560px) { .scrim { align-items: center; } }
+.sheet { background: var(--surface); border-radius: 18px; width: 100%; max-width: 440px; padding: 22px; display: flex; flex-direction: column; gap: 16px; }
+.sheet h2 { margin: 0; font: 700 20px var(--font-body); text-wrap: balance; }
+.field { display: flex; flex-direction: column; gap: 6px; }
+.field label { font-size: 14px; font-weight: 600; color: var(--muted); }
+.field input {
+  font: 500 18px var(--font-body); padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--fg); width: 100%;
+}
+.field input.num { font-family: var(--font-num); direction: ltr; text-align: right; font-variant-numeric: tabular-nums; }
+.hint { font-size: 13px; color: var(--muted); }
+.err { font-size: 14px; color: var(--out); min-height: 1em; }
+.sheet .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn-ghost { background: transparent; color: var(--fg); border-color: var(--line); }
+.btn-danger { background: var(--out); color: #fff; }
+.backup { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+.backup h3 { margin: 0; font: 700 16px var(--font-body); }
+.backup .hint { margin: 0; }
+.backup .btn { font-size: 15px; padding: 11px 10px; }
+.bk-msg { font-size: 14px; min-height: 1em; }
+.bk-msg.ok { color: var(--in); } .bk-msg.bad { color: var(--out); }
+.summary-box { background: var(--bg); border-radius: 12px; padding: 12px 14px; font-size: 15px; display: flex; flex-direction: column; gap: 4px; font-variant-numeric: tabular-nums; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<div class="app" dir="rtl">
+  <div class="top">
+    <button class="chip" id="rateBtn" type="button" aria-label="עריכת תשואה שנתית">
+      <small>תשואה שנתית</small><span id="rateVal">0%</span>
+    </button>
+    <span class="brand">
+      <span class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none">
+          <path d="M8 9.5 20.5 5.2a2 2 0 0 1 2.6 1.3L24.2 10" stroke="var(--accent-ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".75"/>
+          <rect x="4" y="10" width="24" height="17" rx="4" fill="var(--accent-ink)" opacity=".18" stroke="var(--accent-ink)" stroke-width="2"/>
+          <path d="M28 15.5h-6a2.5 2.5 0 0 0 0 5h6" fill="var(--accent)" stroke="var(--accent-ink)" stroke-width="2" stroke-linejoin="round"/>
+          <circle cx="22.2" cy="18" r="1.4" fill="var(--accent-ink)"/>
+        </svg>
+      </span>
+      הארנק של אופיר
+    </span>
+  </div>
+
+  <section class="hero" aria-live="polite">
+    <div class="label">יש לך בארנק</div>
+    <div class="balance" id="balance"><span class="cur">₪</span><span id="balNum">0.00</span></div>
+    <div class="sub" id="interestLine">רווח מתשואה עד עכשיו: <b>₪0.00</b></div>
+  </section>
+
+  <div class="actions">
+    <button class="btn btn-out" id="outBtn" type="button"><span class="sym">−</span> הוצאת כסף</button>
+    <button class="btn btn-in" id="inBtn" type="button"><span class="sym">+</span> הוספת כסף</button>
+  </div>
+
+  <div class="status" id="status" hidden></div>
+
+  <details class="ledger" id="ledger" open>
+    <summary>
+      <span>תנועות</span>
+      <span class="meta"><span id="count">0 תנועות</span><span class="caret" aria-hidden="true">▾</span></span>
+    </summary>
+    <div class="totals">
+      <div class="t-in">סה״כ נכנס<strong id="totIn">₪0.00</strong></div>
+      <div class="t-out">סה״כ יצא<strong id="totOut">₪0.00</strong></div>
+    </div>
+    <ul class="rows" id="rows"></ul>
+    <div class="empty" id="empty">עוד אין תנועות. לחץ על "הוספת כסף" כדי לרשום את הסכום הראשון ומאיפה הוא הגיע.</div>
+  </details>
+
+  <section class="backup" aria-labelledby="bkTitle">
+    <h3 id="bkTitle">גיבוי</h3>
+    <p class="hint">הנתונים נשמרים רק בטלפון הזה ובדפדפן הזה. שמור קובץ גיבוי מדי פעם, ותוכל לטעון אותו בחזרה או להעביר אותו למכשיר אחר.</p>
+    <div class="actions">
+      <button class="btn btn-ghost" id="exportBtn" type="button">שמירה לקובץ</button>
+      <button class="btn btn-ghost" id="importBtn" type="button">טעינה מקובץ</button>
+    </div>
+    <input type="file" id="importFile" accept=".json,application/json" hidden>
+    <div class="bk-msg" id="bkMsg" role="status"></div>
+  </section>
+
+  <p class="note">התשואה מחושבת בריבית דריבית לפי האחוז השנתי, ומצטברת באופן רציף מרגע כל שינוי.</p>
+</div>
+
+<div class="scrim" id="txModal" hidden>
+  <form class="sheet" id="txForm" dir="rtl" novalidate>
+    <h2 id="txTitle">הוספת כסף</h2>
+    <div class="field">
+      <label for="txAmount">סכום (₪)</label>
+      <input class="num" id="txAmount" inputmode="decimal" autocomplete="off" placeholder="0.00">
+    </div>
+    <div class="field">
+      <label for="txNote" id="txNoteLabel">מאיפה קיבלת?</label>
+      <input id="txNote" autocomplete="off" maxlength="120">
+    </div>
+    <div class="err" id="txErr"></div>
+    <div class="row">
+      <button class="btn btn-ghost" type="button" id="txCancel">ביטול</button>
+      <button class="btn btn-in" type="submit" id="txSave">שמירה</button>
+    </div>
+  </form>
+</div>
+
+<div class="scrim" id="rateModal" hidden>
+  <form class="sheet" id="rateForm" dir="rtl" novalidate>
+    <h2>תשואה שנתית</h2>
+    <div class="field">
+      <label for="rateInput">אחוז תשואה בשנה</label>
+      <input class="num" id="rateInput" inputmode="decimal" autocomplete="off">
+      <span class="hint">לדוגמה 4 עבור 4% בשנה. השינוי חל מעכשיו והלאה; מה שכבר הצטבר נשמר.</span>
+    </div>
+    <div class="err" id="rateErr"></div>
+    <div class="row">
+      <button class="btn btn-ghost" type="button" id="rateCancel">ביטול</button>
+      <button class="btn btn-in" type="submit">שמירה</button>
+    </div>
+  </form>
+</div>
+
+<div class="scrim" id="impModal" hidden>
+  <div class="sheet" dir="rtl" role="dialog" aria-labelledby="impTitle">
+    <h2 id="impTitle">לטעון את הגיבוי?</h2>
+    <div class="summary-box" id="impSummary"></div>
+    <p class="hint" style="margin:0">הטעינה תחליף את כל הנתונים הנוכחיים בארנק בנתונים מהקובץ. כדאי לשמור קודם גיבוי של המצב הנוכחי.</p>
+    <div class="err" id="impErr"></div>
+    <div class="row">
+      <button class="btn btn-ghost" type="button" id="impCancel">ביטול</button>
+      <button class="btn btn-danger" type="button" id="impConfirm">החלפה וטעינה</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const YEAR_MS = 365.25 * 24 * 3600 * 1000;
+  const $ = (id) => document.getElementById(id);
+  const fmt = (n) => new Intl.NumberFormat("he-IL", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+  const fmtShek = (n) => (n < 0 ? "−₪" : "₪") + fmt(Math.abs(n));
+  const dateFmt = new Intl.DateTimeFormat("he-IL", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  // checkpoint: balance known at time `at`, growing at `rate` % per year (compound) from then
+  let state = { balance: 0, at: Date.now(), rate: 0, principal: 0 };
+  let txs = [];
+  let busy = false, readOnly = false;
+
+  // ---- local storage (this device + this browser only)
+  const STORE_KEY = "ofirWallet.v1";
+  function saveAll(st, list) {
+    // throws if storage is full or blocked; callers show the error
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      state: st,
+      transactions: list.map((t) => ({ type: t.type, amount: t.amount, note: t.note, at: t.at }))
+    }));
+  }
+  function loadAll() {
+    let raw = null;
+    try { raw = localStorage.getItem(STORE_KEY); }
+    catch (e) { showStatus("הדפדפן חוסם שמירה מקומית, ולכן הנתונים לא יישמרו. בדוק שלא מדובר בגלישה בסתר."); return; }
+    if (!raw) return;
+    try {
+      const d = JSON.parse(raw);
+      const s = d.state || {};
+      state = { balance: Number(s.balance) || 0, at: Number(s.at) || Date.now(), rate: Number(s.rate) || 0, principal: Number(s.principal) || 0 };
+      txs = (Array.isArray(d.transactions) ? d.transactions : [])
+        .map((t) => ({ type: t.type === "out" ? "out" : "in", amount: Number(t.amount) || 0, note: String(t.note || ""), at: Number(t.at) || 0 }))
+        .sort((a, b) => b.at - a.at);
+    } catch (e) { showStatus("הנתונים השמורים פגומים. אפשר לטעון קובץ גיבוי."); }
+  }
+
+  function valueAt(t) {
+    const years = Math.max(0, t - state.at) / YEAR_MS;
+    return state.balance * Math.pow(1 + state.rate / 100, years);
+  }
+
+  function renderBalance() {
+    const v = valueAt(Date.now());
+    $("balNum").textContent = fmt(Math.abs(v));
+    $("balance").querySelector(".cur").textContent = v < 0 ? "−₪" : "₪";
+    $("balance").classList.toggle("neg", v < 0);
+    const interest = v - state.principal;
+    $("interestLine").innerHTML = "";
+    $("interestLine").append("רווח מתשואה עד עכשיו: ");
+    const b = document.createElement("b"); b.textContent = fmtShek(interest);
+    $("interestLine").append(b);
+  }
+
+  function renderRate() {
+    $("rateVal").textContent = (Math.round(state.rate * 100) / 100) + "%";
+  }
+
+  function renderList() {
+    const ul = $("rows"); ul.innerHTML = "";
+    let tin = 0, tout = 0;
+    txs.forEach((t) => {
+      if (t.type === "in") tin += t.amount; else tout += t.amount;
+      const li = document.createElement("li");
+      const note = document.createElement("div"); note.className = "r-note";
+      note.textContent = t.note;
+      const kind = document.createElement("span"); kind.className = "r-kind " + t.type;
+      kind.textContent = t.type === "in" ? "נכנס" : "יצא";
+      note.append(kind);
+      const date = document.createElement("div"); date.className = "r-date";
+      date.textContent = dateFmt.format(new Date(t.at));
+      const amt = document.createElement("div"); amt.className = "r-amt " + t.type;
+      amt.textContent = (t.type === "in" ? "+" : "−") + "₪" + fmt(t.amount);
+      li.append(note, amt, date);
+      ul.append(li);
+    });
+    $("totIn").textContent = "₪" + fmt(tin);
+    $("totOut").textContent = "₪" + fmt(tout);
+    $("count").textContent = txs.length === 1 ? "תנועה אחת" : txs.length + " תנועות";
+    $("empty").hidden = txs.length > 0;
+    ul.hidden = txs.length === 0;
+  }
+
+  function showStatus(msg) { const s = $("status"); s.textContent = msg; s.hidden = !msg; }
+
+  function parseAmount(raw) {
+    const s = String(raw).replace(/[,\s₪]/g, "");
+    if (!/^\d+(\.\d{0,2})?$/.test(s)) return NaN;
+    return Number(s);
+  }
+
+  // remember ledger open/closed per viewer
+  try { const v = localStorage.getItem("ledgerOpen"); if (v === "0") $("ledger").open = false; } catch (e) {}
+  $("ledger").addEventListener("toggle", () => { try { localStorage.setItem("ledgerOpen", $("ledger").open ? "1" : "0"); } catch (e) {} });
+
+  // ---- transaction modal
+  let txType = "in";
+  function openTx(type) {
+    if (readOnly) return;
+    txType = type;
+    $("txTitle").textContent = type === "in" ? "הוספת כסף" : "הוצאת כסף";
+    $("txNoteLabel").textContent = type === "in" ? "מאיפה קיבלת?" : "על מה הוצאת?";
+    $("txNote").placeholder = type === "in" ? "למשל: דמי כיס מסבתא" : "למשל: גלידה";
+    $("txSave").className = "btn " + (type === "in" ? "btn-in" : "btn-danger");
+    $("txAmount").value = ""; $("txNote").value = ""; $("txErr").textContent = "";
+    $("txModal").hidden = false; $("txAmount").focus();
+  }
+  function closeTx() { $("txModal").hidden = true; }
+  $("inBtn").onclick = () => openTx("in");
+  $("outBtn").onclick = () => openTx("out");
+  $("txCancel").onclick = closeTx;
+  $("txModal").addEventListener("click", (e) => { if (e.target === $("txModal")) closeTx(); });
+
+  $("txForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    const amount = parseAmount($("txAmount").value);
+    const note = $("txNote").value.trim();
+    if (!(amount > 0)) { $("txErr").textContent = "רשום סכום גדול מ-0, עם עד שתי ספרות אחרי הנקודה."; return; }
+    if (!note) { $("txErr").textContent = txType === "in" ? "רשום מאיפה קיבלת את הכסף." : "רשום על מה הוצאת את הכסף."; return; }
+    const now = Date.now();
+    const current = valueAt(now);
+    if (txType === "out" && amount > current + 0.005) { $("txErr").textContent = "אין מספיק כסף בארנק. יש לך " + fmtShek(current) + "."; return; }
+    const signed = txType === "in" ? amount : -amount;
+    const next = { balance: current + signed, at: now, rate: state.rate, principal: state.principal + signed };
+    const tx = { type: txType, amount, note, at: now };
+    busy = true; $("txSave").disabled = true;
+    try {
+      saveAll(next, [tx, ...txs]);
+      state = next; txs = [tx, ...txs]; renderList(); renderBalance();
+      closeTx();
+    } catch (err) {
+      $("txErr").textContent = "השמירה נכשלה. ייתכן שאחסון הדפדפן מלא או חסום (למשל בגלישה בסתר).";
+    } finally { busy = false; $("txSave").disabled = false; }
+  });
+
+  // ---- rate modal
+  $("rateBtn").onclick = () => {
+    if (readOnly) return;
+    $("rateInput").value = String(state.rate); $("rateErr").textContent = "";
+    $("rateModal").hidden = false; $("rateInput").focus(); $("rateInput").select();
+  };
+  const closeRate = () => { $("rateModal").hidden = true; };
+  $("rateCancel").onclick = closeRate;
+  $("rateModal").addEventListener("click", (e) => { if (e.target === $("rateModal")) closeRate(); });
+  $("rateForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (busy) return;
+    const s = $("rateInput").value.replace(/[%\s]/g, "");
+    if (!/^-?\d+(\.\d+)?$/.test(s)) { $("rateErr").textContent = "רשום מספר, למשל 4 או 3.5."; return; }
+    const r = Number(s);
+    if (r <= -100 || r > 1000) { $("rateErr").textContent = "רשום אחוז בין ‎-99.99 ל-1000."; return; }
+    const now = Date.now();
+    const next = { balance: valueAt(now), at: now, rate: r, principal: state.principal };
+    busy = true;
+    try {
+      saveAll(next, txs);
+      state = next; renderRate(); renderBalance(); closeRate();
+    } catch (err) { $("rateErr").textContent = "השמירה נכשלה. נסה שוב."; }
+    finally { busy = false; }
+  });
+
+  // ---- backup: export / import
+  const bkMsg = (text, kind) => { const m = $("bkMsg"); m.textContent = text; m.className = "bk-msg" + (kind ? " " + kind : ""); };
+
+  function buildBackup() {
+    return {
+      app: "ofir-wallet",
+      format: 1,
+      exportedAt: new Date().toISOString(),
+      state: { balance: state.balance, at: state.at, rate: state.rate, principal: state.principal },
+      transactions: txs.map((t) => ({ type: t.type, amount: t.amount, note: t.note, at: t.at }))
+    };
+  }
+
+  $("exportBtn").onclick = async () => {
+    const data = JSON.stringify(buildBackup(), null, 2);
+    const d = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    const filename = "ofir-wallet-" + d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + ".json";
+    try {
+      const blob = new Blob([data], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = filename; a.rel = "noopener";
+      document.body.append(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+      bkMsg("הקובץ " + filename + " נשלח להורדה. בדוק בתיקיית ההורדות.", "ok");
+    } catch (err) {
+      bkMsg("לא הצלחתי ליצור את הקובץ בדפדפן הזה.", "bad");
+    }
+  };
+
+  function validateBackup(obj) {
+    if (!obj || typeof obj !== "object" || obj.app !== "ofir-wallet") throw new Error("זה לא קובץ גיבוי של הארנק.");
+    const s = obj.state;
+    const isNum = (v) => typeof v === "number" && isFinite(v);
+    if (!s || !isNum(s.balance) || !isNum(s.at) || !isNum(s.rate) || !isNum(s.principal) || s.rate <= -100)
+      throw new Error("נתוני היתרה בקובץ פגומים.");
+    if (!Array.isArray(obj.transactions)) throw new Error("רשימת התנועות בקובץ פגומה.");
+    const list = obj.transactions.map((t, i) => {
+      if (!t || (t.type !== "in" && t.type !== "out") || !isNum(t.amount) || t.amount <= 0 || typeof t.note !== "string" || !t.note.trim() || !isNum(t.at))
+        throw new Error("תנועה מספר " + (i + 1) + " בקובץ פגומה.");
+      return { type: t.type, amount: t.amount, note: t.note.trim().slice(0, 120), at: t.at };
+    });
+    return { state: { balance: s.balance, at: s.at, rate: s.rate, principal: s.principal }, transactions: list };
+  }
+
+  let pendingImport = null;
+  $("importBtn").onclick = () => {
+    if (readOnly) return;
+    $("importFile").value = ""; $("importFile").click();
+  };
+  $("importFile").addEventListener("change", () => {
+    const f = $("importFile").files && $("importFile").files[0];
+    if (!f) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      try {
+        pendingImport = validateBackup(JSON.parse(String(reader.result)));
+      } catch (err) {
+        bkMsg(err instanceof SyntaxError ? "הקובץ לא נקרא. בחר קובץ גיבוי מסוג ‎.json." : err.message, "bad");
+        return;
+      }
+      const p = pendingImport;
+      const nowVal = p.state.balance * Math.pow(1 + p.state.rate / 100, Math.max(0, Date.now() - p.state.at) / YEAR_MS);
+      const box = $("impSummary"); box.innerHTML = "";
+      [
+        "קובץ: " + f.name,
+        "יתרה לפי הקובץ (כולל תשואה עד עכשיו): " + fmtShek(nowVal),
+        "תשואה שנתית: " + p.state.rate + "%",
+        "מספר תנועות: " + p.transactions.length
+      ].forEach((line) => { const d = document.createElement("div"); d.textContent = line; box.append(d); });
+      $("impErr").textContent = "";
+      $("impConfirm").disabled = false;
+      $("impModal").hidden = false;
+    };
+    reader.onerror = () => bkMsg("הקובץ לא נקרא. נסה שוב.", "bad");
+    reader.readAsText(f);
+  });
+  const closeImp = () => { if (!busy) { $("impModal").hidden = true; pendingImport = null; } };
+  $("impCancel").onclick = closeImp;
+  $("impModal").addEventListener("click", (e) => { if (e.target === $("impModal")) closeImp(); });
+
+  $("impConfirm").onclick = async () => {
+    if (!pendingImport || busy) return;
+    const p = pendingImport;
+    busy = true; $("impConfirm").disabled = true; $("impCancel").disabled = true;
+    try {
+      const sorted = p.transactions.slice().sort((a, b) => b.at - a.at);
+      saveAll(p.state, sorted);
+      txs = sorted; state = p.state; renderList(); renderRate(); renderBalance();
+      busy = false; $("impCancel").disabled = false;
+      $("impModal").hidden = true; pendingImport = null;
+      bkMsg("הגיבוי נטען. " + p.transactions.length + " תנועות שוחזרו.", "ok");
+    } catch (err) {
+      busy = false; $("impCancel").disabled = false; $("impConfirm").disabled = false;
+      $("impErr").textContent = "הטעינה נכשלה. ייתכן שאחסון הדפדפן מלא או חסום.";
+    }
+  };
+
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeTx(); closeRate(); closeImp(); } });
+
+  loadAll();
+  renderRate(); renderBalance(); renderList();
+  setInterval(renderBalance, 1000);
+
+  // keep other open tabs of the app in sync
+  window.addEventListener("storage", (e) => { if (e.key === STORE_KEY) { loadAll(); renderRate(); renderBalance(); renderList(); } });
+
+  // installable app: offline cache
+  if ("serviceWorker" in navigator && location.protocol === "https:") {
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  }
+})();
+</script>
+</body>
+</html>
