@@ -55,7 +55,26 @@ body {
   padding-block: 16px 40px;
 }
 .app { max-width: 520px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
-.top { display: flex; justify-content: space-between; align-items: center; direction: ltr; }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; direction: ltr; }
+.top-left { display: flex; align-items: center; gap: 8px; flex: none; }
+.top-left .chip { flex-direction: column; gap: 0; padding: 3px 12px; border-radius: 14px; line-height: 1.2; }
+.top-left .chip small { font-size: 11px; }
+.top-left .chip span { font-variant-numeric: tabular-nums; }
+.icon-btn {
+  width: 38px; height: 38px; flex: none; display: grid; place-items: center; padding: 0; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 999px; color: var(--muted);
+}
+.icon-btn svg { width: 20px; height: 20px; }
+.icon-btn:hover { border-color: var(--accent); color: var(--fg); }
+.icon-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+#walletTitle { min-width: 0; overflow-wrap: anywhere; }
+@media (max-width: 440px) {
+  .brand { font-size: 18px; gap: 8px; }
+  .brand-icon { width: 38px; height: 38px; border-radius: 11px; }
+  .brand-icon svg { width: 24px; height: 24px; }
+  .top-left { gap: 6px; }
+  .top-left .chip { padding: 3px 10px; }
+}
 .chip {
   display: inline-flex; align-items: center; gap: 8px; direction: rtl;
   background: var(--surface); border: 1px solid var(--line); border-radius: 999px;
@@ -63,7 +82,7 @@ body {
 }
 .chip small { font: 400 13px var(--font-body); color: var(--muted); }
 .chip:hover { border-color: var(--accent); }
-.brand { display: inline-flex; align-items: center; gap: 10px; font: 700 clamp(20px, 5.5vw, 26px)/1.1 var(--font-num); color: var(--fg); direction: rtl; }
+.brand { min-width: 0; display: inline-flex; align-items: center; gap: 10px; font: 700 clamp(20px, 5.5vw, 26px)/1.1 var(--font-num); color: var(--fg); direction: rtl; }
 .brand-icon { width: 44px; height: 44px; flex: none; border-radius: 13px; background: var(--accent); display: grid; place-items: center; box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 30%, transparent); }
 .brand-icon svg { width: 28px; height: 28px; }
 
@@ -148,9 +167,14 @@ ul.rows li:last-child { border-bottom: 0; }
 
 <div class="app" dir="rtl">
   <div class="top">
-    <button class="chip" id="rateBtn" type="button" aria-label="עריכת תשואה שנתית">
-      <small>תשואה שנתית</small><span id="rateVal">0%</span>
-    </button>
+    <div class="top-left">
+      <button class="icon-btn" id="settingsBtn" type="button" aria-label="הגדרות" title="הגדרות">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+      <button class="chip" id="rateBtn" type="button" aria-label="תשואה שנתית, פתיחת הגדרות">
+        <small>תשואה שנתית</small><span id="rateVal">0%</span>
+      </button>
+    </div>
     <span class="brand">
       <span class="brand-icon" aria-hidden="true">
         <svg viewBox="0 0 32 32" fill="none">
@@ -160,7 +184,7 @@ ul.rows li:last-child { border-bottom: 0; }
           <circle cx="22.2" cy="18" r="1.4" fill="var(--accent-ink)"/>
         </svg>
       </span>
-      הארנק של אופיר
+      <span id="walletTitle">הארנק של אופיר</span>
     </span>
   </div>
 
@@ -223,17 +247,22 @@ ul.rows li:last-child { border-bottom: 0; }
   </form>
 </div>
 
-<div class="scrim" id="rateModal" hidden>
-  <form class="sheet" id="rateForm" dir="rtl" novalidate>
-    <h2>תשואה שנתית</h2>
+<div class="scrim" id="setModal" hidden>
+  <form class="sheet" id="setForm" dir="rtl" novalidate>
+    <h2>הגדרות</h2>
     <div class="field">
-      <label for="rateInput">אחוז תשואה בשנה</label>
-      <input class="num" id="rateInput" inputmode="decimal" autocomplete="off">
-      <span class="hint">לדוגמה 4 עבור 4% בשנה. השינוי חל מעכשיו והלאה; מה שכבר הצטבר נשמר.</span>
+      <label for="ownerInput">שם בעל הארנק</label>
+      <input id="ownerInput" autocomplete="off" maxlength="30" placeholder="למשל: אופיר">
+      <span class="hint" id="ownerPreview">הכותרת תהיה: הארנק של אופיר</span>
     </div>
-    <div class="err" id="rateErr"></div>
+    <div class="field">
+      <label for="rateInput">תשואה שנתית (%)</label>
+      <input class="num" id="rateInput" inputmode="decimal" autocomplete="off">
+      <span class="hint">לדוגמה 4 עבור 4% בשנה. השינוי חל מעכשיו והלאה, ומה שכבר הצטבר נשמר.</span>
+    </div>
+    <div class="err" id="setErr"></div>
     <div class="row">
-      <button class="btn btn-ghost" type="button" id="rateCancel">ביטול</button>
+      <button class="btn btn-ghost" type="button" id="setCancel">ביטול</button>
       <button class="btn btn-in" type="submit">שמירה</button>
     </div>
   </form>
@@ -263,13 +292,16 @@ ul.rows li:last-child { border-bottom: 0; }
   // checkpoint: balance known at time `at`, growing at `rate` % per year (compound) from then
   let state = { balance: 0, at: Date.now(), rate: 0, principal: 0 };
   let txs = [];
+  let owner = "אופיר";
   let busy = false, readOnly = false;
+  const titleFor = (name) => "הארנק של " + name;
 
   // ---- local storage (this device + this browser only)
   const STORE_KEY = "ofirWallet.v1";
-  function saveAll(st, list) {
+  function saveAll(st, list, name) {
     // throws if storage is full or blocked; callers show the error
     localStorage.setItem(STORE_KEY, JSON.stringify({
+      owner: name === undefined ? owner : name,
       state: st,
       transactions: list.map((t) => ({ type: t.type, amount: t.amount, note: t.note, at: t.at }))
     }));
@@ -281,6 +313,7 @@ ul.rows li:last-child { border-bottom: 0; }
     if (!raw) return;
     try {
       const d = JSON.parse(raw);
+      if (typeof d.owner === "string" && d.owner.trim()) owner = d.owner.trim().slice(0, 30);
       const s = d.state || {};
       state = { balance: Number(s.balance) || 0, at: Number(s.at) || Date.now(), rate: Number(s.rate) || 0, principal: Number(s.principal) || 0 };
       txs = (Array.isArray(d.transactions) ? d.transactions : [])
@@ -308,6 +341,12 @@ ul.rows li:last-child { border-bottom: 0; }
 
   function renderRate() {
     $("rateVal").textContent = (Math.round(state.rate * 100) / 100) + "%";
+  }
+
+  function renderOwner() {
+    const t = titleFor(owner);
+    $("walletTitle").textContent = t;
+    document.title = t;
   }
 
   function renderList() {
@@ -388,29 +427,43 @@ ul.rows li:last-child { border-bottom: 0; }
     } finally { busy = false; $("txSave").disabled = false; }
   });
 
-  // ---- rate modal
-  $("rateBtn").onclick = () => {
+  // ---- settings modal (owner name + annual yield)
+  function openSettings(focusId) {
     if (readOnly) return;
-    $("rateInput").value = String(state.rate); $("rateErr").textContent = "";
-    $("rateModal").hidden = false; $("rateInput").focus(); $("rateInput").select();
-  };
-  const closeRate = () => { $("rateModal").hidden = true; };
-  $("rateCancel").onclick = closeRate;
-  $("rateModal").addEventListener("click", (e) => { if (e.target === $("rateModal")) closeRate(); });
-  $("rateForm").addEventListener("submit", async (e) => {
+    $("ownerInput").value = owner;
+    $("rateInput").value = String(state.rate);
+    $("ownerPreview").textContent = "הכותרת תהיה: " + titleFor(owner);
+    $("setErr").textContent = "";
+    $("setModal").hidden = false;
+    $(focusId).focus(); $(focusId).select();
+  }
+  const closeSettings = () => { $("setModal").hidden = true; };
+  $("settingsBtn").onclick = () => openSettings("ownerInput");
+  $("rateBtn").onclick = () => openSettings("rateInput");
+  $("setCancel").onclick = closeSettings;
+  $("setModal").addEventListener("click", (e) => { if (e.target === $("setModal")) closeSettings(); });
+  $("ownerInput").addEventListener("input", () => {
+    const n = $("ownerInput").value.trim();
+    $("ownerPreview").textContent = n ? "הכותרת תהיה: " + titleFor(n) : "רשום שם.";
+  });
+  $("setForm").addEventListener("submit", (e) => {
     e.preventDefault();
     if (busy) return;
+    const name = $("ownerInput").value.trim().replace(/\s+/g, " ");
+    if (!name) { $("setErr").textContent = "רשום את השם של בעל הארנק."; $("ownerInput").focus(); return; }
     const s = $("rateInput").value.replace(/[%\s]/g, "");
-    if (!/^-?\d+(\.\d+)?$/.test(s)) { $("rateErr").textContent = "רשום מספר, למשל 4 או 3.5."; return; }
+    if (!/^-?\d+(\.\d+)?$/.test(s)) { $("setErr").textContent = "בתשואה רשום מספר, למשל 4 או 3.5."; $("rateInput").focus(); return; }
     const r = Number(s);
-    if (r <= -100 || r > 1000) { $("rateErr").textContent = "רשום אחוז בין ‎-99.99 ל-1000."; return; }
+    if (r <= -100 || r > 1000) { $("setErr").textContent = "רשום תשואה בין ‎-99.99 ל-1000."; $("rateInput").focus(); return; }
+    // a new rate starts a new checkpoint so interest earned so far is kept
     const now = Date.now();
-    const next = { balance: valueAt(now), at: now, rate: r, principal: state.principal };
+    const next = r === state.rate ? state : { balance: valueAt(now), at: now, rate: r, principal: state.principal };
     busy = true;
     try {
-      saveAll(next, txs);
-      state = next; renderRate(); renderBalance(); closeRate();
-    } catch (err) { $("rateErr").textContent = "השמירה נכשלה. נסה שוב."; }
+      saveAll(next, txs, name);
+      owner = name; state = next;
+      renderOwner(); renderRate(); renderBalance(); closeSettings();
+    } catch (err) { $("setErr").textContent = "השמירה נכשלה. ייתכן שאחסון הדפדפן מלא או חסום."; }
     finally { busy = false; }
   });
 
@@ -422,6 +475,7 @@ ul.rows li:last-child { border-bottom: 0; }
       app: "ofir-wallet",
       format: 1,
       exportedAt: new Date().toISOString(),
+      owner: owner,
       state: { balance: state.balance, at: state.at, rate: state.rate, principal: state.principal },
       transactions: txs.map((t) => ({ type: t.type, amount: t.amount, note: t.note, at: t.at }))
     };
@@ -457,7 +511,9 @@ ul.rows li:last-child { border-bottom: 0; }
         throw new Error("תנועה מספר " + (i + 1) + " בקובץ פגומה.");
       return { type: t.type, amount: t.amount, note: t.note.trim().slice(0, 120), at: t.at };
     });
-    return { state: { balance: s.balance, at: s.at, rate: s.rate, principal: s.principal }, transactions: list };
+    // older backups have no owner name: keep the current one
+    const name = typeof obj.owner === "string" && obj.owner.trim() ? obj.owner.trim().slice(0, 30) : null;
+    return { owner: name, state: { balance: s.balance, at: s.at, rate: s.rate, principal: s.principal }, transactions: list };
   }
 
   let pendingImport = null;
@@ -481,6 +537,7 @@ ul.rows li:last-child { border-bottom: 0; }
       const box = $("impSummary"); box.innerHTML = "";
       [
         "קובץ: " + f.name,
+        "שם: " + titleFor(p.owner || owner),
         "יתרה לפי הקובץ (כולל תשואה עד עכשיו): " + fmtShek(nowVal),
         "תשואה שנתית: " + p.state.rate + "%",
         "מספר תנועות: " + p.transactions.length
@@ -502,8 +559,9 @@ ul.rows li:last-child { border-bottom: 0; }
     busy = true; $("impConfirm").disabled = true; $("impCancel").disabled = true;
     try {
       const sorted = p.transactions.slice().sort((a, b) => b.at - a.at);
-      saveAll(p.state, sorted);
-      txs = sorted; state = p.state; renderList(); renderRate(); renderBalance();
+      const name = p.owner || owner;
+      saveAll(p.state, sorted, name);
+      txs = sorted; state = p.state; owner = name; renderOwner(); renderList(); renderRate(); renderBalance();
       busy = false; $("impCancel").disabled = false;
       $("impModal").hidden = true; pendingImport = null;
       bkMsg("הגיבוי נטען. " + p.transactions.length + " תנועות שוחזרו.", "ok");
@@ -513,14 +571,14 @@ ul.rows li:last-child { border-bottom: 0; }
     }
   };
 
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeTx(); closeRate(); closeImp(); } });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeTx(); closeSettings(); closeImp(); } });
 
   loadAll();
-  renderRate(); renderBalance(); renderList();
+  renderOwner(); renderRate(); renderBalance(); renderList();
   setInterval(renderBalance, 1000);
 
   // keep other open tabs of the app in sync
-  window.addEventListener("storage", (e) => { if (e.key === STORE_KEY) { loadAll(); renderRate(); renderBalance(); renderList(); } });
+  window.addEventListener("storage", (e) => { if (e.key === STORE_KEY) { loadAll(); renderOwner(); renderRate(); renderBalance(); renderList(); } });
 
   // installable app: offline cache
   if ("serviceWorker" in navigator && location.protocol === "https:") {

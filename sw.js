@@ -1,6 +1,6 @@
 // Caches the app's files so it opens without internet.
 // Bump CACHE when you change any file, so phones pick up the new version.
-const CACHE = "ofir-wallet-v1";
+const CACHE = "ofir-wallet-v2";
 const FILES = [
   "./",
   "./index.html",
