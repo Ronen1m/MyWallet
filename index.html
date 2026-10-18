@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>הארנק של אופיר</title>
+<title>הארנק שלי</title>
 <meta name="theme-color" content="#1f6b4a">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="הארנק של אופיר">
+<meta name="apple-mobile-web-app-title" content="הארנק שלי">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
@@ -59,7 +59,8 @@ body {
 .top-left { display: flex; align-items: center; gap: 8px; flex: none; }
 .top-left .chip { flex-direction: column; gap: 0; padding: 3px 12px; border-radius: 14px; line-height: 1.2; }
 .top-left .chip small { font-size: 11px; }
-.top-left .chip span { font-variant-numeric: tabular-nums; }
+#rateVal { font-variant-numeric: tabular-nums; }
+.lbl-short { display: none; }
 .icon-btn {
   width: 38px; height: 38px; flex: none; display: grid; place-items: center; padding: 0; cursor: pointer;
   background: var(--surface); border: 1px solid var(--line); border-radius: 999px; color: var(--muted);
@@ -68,12 +69,35 @@ body {
 .icon-btn:hover { border-color: var(--accent); color: var(--fg); }
 .icon-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 #walletTitle { min-width: 0; overflow-wrap: anywhere; }
+.title-btn {
+  min-width: 0; display: inline-flex; align-items: center; gap: 6px; padding: 2px 4px; margin: -2px -4px;
+  background: none; border: 0; border-radius: 8px; color: inherit; font: inherit; text-align: right; cursor: pointer;
+}
+.title-btn .pencil { width: 16px; height: 16px; flex: none; color: var(--muted); }
+.title-btn:hover .pencil { color: var(--accent); }
+.title-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.name-form {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px;
+  display: flex; flex-direction: column; gap: 8px; margin-top: -12px;
+}
+.name-form label { font-size: 14px; font-weight: 600; color: var(--muted); }
+.name-form input {
+  font: 500 18px var(--font-body); padding: 10px 14px; border-radius: 12px; border: 1px solid var(--line);
+  background: var(--bg); color: var(--fg); width: 100%;
+}
+.name-form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.name-form .btn { font-size: 15px; padding: 10px; }
+.name-form .err:empty { display: none; }
 @media (max-width: 440px) {
-  .brand { font-size: 18px; gap: 8px; }
-  .brand-icon { width: 38px; height: 38px; border-radius: 11px; }
-  .brand-icon svg { width: 24px; height: 24px; }
+  .brand { font-size: 17px; gap: 7px; }
+  .brand-icon { width: 34px; height: 34px; border-radius: 10px; }
+  .brand-icon svg { width: 22px; height: 22px; }
+  .title-btn { gap: 3px; }
+  .title-btn .pencil { width: 13px; height: 13px; }
   .top-left { gap: 6px; }
   .top-left .chip { padding: 3px 10px; }
+  .lbl-long { display: none; }
+  .lbl-short { display: inline; }
 }
 .chip {
   display: inline-flex; align-items: center; gap: 8px; direction: rtl;
@@ -172,7 +196,7 @@ ul.rows li:last-child { border-bottom: 0; }
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
       </button>
       <button class="chip" id="rateBtn" type="button" aria-label="תשואה שנתית, פתיחת הגדרות">
-        <small>תשואה שנתית</small><span id="rateVal">0%</span>
+        <small><span class="lbl-long">תשואה שנתית</span><span class="lbl-short">תשואה</span></small><span id="rateVal">0%</span>
       </button>
     </div>
     <span class="brand">
@@ -184,9 +208,23 @@ ul.rows li:last-child { border-bottom: 0; }
           <circle cx="22.2" cy="18" r="1.4" fill="var(--accent-ink)"/>
         </svg>
       </span>
-      <span id="walletTitle">הארנק של אופיר</span>
+      <button class="title-btn" id="nameBtn" type="button" aria-label="שינוי השם בכותרת" title="לחץ כדי לשנות את השם">
+        <span id="walletTitle">הארנק שלי</span>
+        <svg class="pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+      </button>
     </span>
   </div>
+
+  <form class="name-form" id="nameForm" hidden novalidate>
+    <label for="nameInput">שם הילד</label>
+    <input id="nameInput" autocomplete="off" maxlength="20" placeholder="רשום את השם">
+    <span class="hint" id="namePreview">הכותרת תהיה: הארנק שלי</span>
+    <div class="row">
+      <button class="btn btn-ghost" type="button" id="nameCancel">ביטול</button>
+      <button class="btn btn-in" type="submit">שמירה</button>
+    </div>
+    <div class="err" id="nameErr"></div>
+  </form>
 
   <section class="hero" aria-live="polite">
     <div class="label">יש לך בארנק</div>
@@ -251,11 +289,6 @@ ul.rows li:last-child { border-bottom: 0; }
   <form class="sheet" id="setForm" dir="rtl" novalidate>
     <h2>הגדרות</h2>
     <div class="field">
-      <label for="ownerInput">שם בעל הארנק</label>
-      <input id="ownerInput" autocomplete="off" maxlength="30" placeholder="למשל: אופיר">
-      <span class="hint" id="ownerPreview">הכותרת תהיה: הארנק של אופיר</span>
-    </div>
-    <div class="field">
       <label for="rateInput">תשואה שנתית (%)</label>
       <input class="num" id="rateInput" inputmode="decimal" autocomplete="off">
       <span class="hint">לדוגמה 4 עבור 4% בשנה. השינוי חל מעכשיו והלאה, ומה שכבר הצטבר נשמר.</span>
@@ -292,9 +325,11 @@ ul.rows li:last-child { border-bottom: 0; }
   // checkpoint: balance known at time `at`, growing at `rate` % per year (compound) from then
   let state = { balance: 0, at: Date.now(), rate: 0, principal: 0 };
   let txs = [];
-  let owner = "אופיר";
+  // the child's name appears only in the main-screen title; the app itself is always "הארנק שלי"
+  let owner = "";
   let busy = false, readOnly = false;
-  const titleFor = (name) => "הארנק של " + name;
+  const titleFor = (name) => (name ? "הארנק של " + name : "הארנק שלי");
+  const cleanName = (s) => String(s).trim().replace(/\s+/g, " ").slice(0, 20);
 
   // ---- local storage (this device + this browser only)
   const STORE_KEY = "ofirWallet.v1";
@@ -313,7 +348,7 @@ ul.rows li:last-child { border-bottom: 0; }
     if (!raw) return;
     try {
       const d = JSON.parse(raw);
-      if (typeof d.owner === "string" && d.owner.trim()) owner = d.owner.trim().slice(0, 30);
+      if (typeof d.owner === "string") owner = cleanName(d.owner);
       const s = d.state || {};
       state = { balance: Number(s.balance) || 0, at: Number(s.at) || Date.now(), rate: Number(s.rate) || 0, principal: Number(s.principal) || 0 };
       txs = (Array.isArray(d.transactions) ? d.transactions : [])
@@ -344,9 +379,7 @@ ul.rows li:last-child { border-bottom: 0; }
   }
 
   function renderOwner() {
-    const t = titleFor(owner);
-    $("walletTitle").textContent = t;
-    document.title = t;
+    $("walletTitle").textContent = titleFor(owner);
   }
 
   function renderList() {
@@ -427,30 +460,50 @@ ul.rows li:last-child { border-bottom: 0; }
     } finally { busy = false; $("txSave").disabled = false; }
   });
 
-  // ---- settings modal (owner name + annual yield)
-  function openSettings(focusId) {
+  // ---- child's name: edited on the main screen by tapping the title
+  function openName() {
     if (readOnly) return;
-    $("ownerInput").value = owner;
+    $("nameInput").value = owner;
+    $("namePreview").textContent = "הכותרת תהיה: " + titleFor(owner);
+    $("nameErr").textContent = "";
+    $("nameForm").hidden = false;
+    $("nameBtn").setAttribute("aria-expanded", "true");
+    $("nameInput").focus(); $("nameInput").select();
+  }
+  const closeName = () => { $("nameForm").hidden = true; $("nameBtn").setAttribute("aria-expanded", "false"); };
+  $("nameBtn").onclick = () => ($("nameForm").hidden ? openName() : closeName());
+  $("nameCancel").onclick = closeName;
+  $("nameInput").addEventListener("input", () => {
+    $("namePreview").textContent = "הכותרת תהיה: " + titleFor(cleanName($("nameInput").value));
+  });
+  $("nameForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    if (busy) return;
+    const name = cleanName($("nameInput").value);
+    busy = true;
+    try {
+      saveAll(state, txs, name);
+      owner = name; renderOwner(); closeName();
+    } catch (err) { $("nameErr").textContent = "השמירה נכשלה. ייתכן שאחסון הדפדפן מלא או חסום."; }
+    finally { busy = false; }
+  });
+
+  // ---- settings modal (annual yield)
+  function openSettings() {
+    if (readOnly) return;
     $("rateInput").value = String(state.rate);
-    $("ownerPreview").textContent = "הכותרת תהיה: " + titleFor(owner);
     $("setErr").textContent = "";
     $("setModal").hidden = false;
-    $(focusId).focus(); $(focusId).select();
+    $("rateInput").focus(); $("rateInput").select();
   }
   const closeSettings = () => { $("setModal").hidden = true; };
-  $("settingsBtn").onclick = () => openSettings("ownerInput");
-  $("rateBtn").onclick = () => openSettings("rateInput");
+  $("settingsBtn").onclick = openSettings;
+  $("rateBtn").onclick = openSettings;
   $("setCancel").onclick = closeSettings;
   $("setModal").addEventListener("click", (e) => { if (e.target === $("setModal")) closeSettings(); });
-  $("ownerInput").addEventListener("input", () => {
-    const n = $("ownerInput").value.trim();
-    $("ownerPreview").textContent = n ? "הכותרת תהיה: " + titleFor(n) : "רשום שם.";
-  });
   $("setForm").addEventListener("submit", (e) => {
     e.preventDefault();
     if (busy) return;
-    const name = $("ownerInput").value.trim().replace(/\s+/g, " ");
-    if (!name) { $("setErr").textContent = "רשום את השם של בעל הארנק."; $("ownerInput").focus(); return; }
     const s = $("rateInput").value.replace(/[%\s]/g, "");
     if (!/^-?\d+(\.\d+)?$/.test(s)) { $("setErr").textContent = "בתשואה רשום מספר, למשל 4 או 3.5."; $("rateInput").focus(); return; }
     const r = Number(s);
@@ -460,9 +513,9 @@ ul.rows li:last-child { border-bottom: 0; }
     const next = r === state.rate ? state : { balance: valueAt(now), at: now, rate: r, principal: state.principal };
     busy = true;
     try {
-      saveAll(next, txs, name);
-      owner = name; state = next;
-      renderOwner(); renderRate(); renderBalance(); closeSettings();
+      saveAll(next, txs);
+      state = next;
+      renderRate(); renderBalance(); closeSettings();
     } catch (err) { $("setErr").textContent = "השמירה נכשלה. ייתכן שאחסון הדפדפן מלא או חסום."; }
     finally { busy = false; }
   });
@@ -512,7 +565,7 @@ ul.rows li:last-child { border-bottom: 0; }
       return { type: t.type, amount: t.amount, note: t.note.trim().slice(0, 120), at: t.at };
     });
     // older backups have no owner name: keep the current one
-    const name = typeof obj.owner === "string" && obj.owner.trim() ? obj.owner.trim().slice(0, 30) : null;
+    const name = typeof obj.owner === "string" ? cleanName(obj.owner) : null;
     return { owner: name, state: { balance: s.balance, at: s.at, rate: s.rate, principal: s.principal }, transactions: list };
   }
 
@@ -537,7 +590,7 @@ ul.rows li:last-child { border-bottom: 0; }
       const box = $("impSummary"); box.innerHTML = "";
       [
         "קובץ: " + f.name,
-        "שם: " + titleFor(p.owner || owner),
+        "כותרת: " + titleFor(p.owner !== null ? p.owner : owner),
         "יתרה לפי הקובץ (כולל תשואה עד עכשיו): " + fmtShek(nowVal),
         "תשואה שנתית: " + p.state.rate + "%",
         "מספר תנועות: " + p.transactions.length
@@ -559,7 +612,7 @@ ul.rows li:last-child { border-bottom: 0; }
     busy = true; $("impConfirm").disabled = true; $("impCancel").disabled = true;
     try {
       const sorted = p.transactions.slice().sort((a, b) => b.at - a.at);
-      const name = p.owner || owner;
+      const name = p.owner !== null ? p.owner : owner;
       saveAll(p.state, sorted, name);
       txs = sorted; state = p.state; owner = name; renderOwner(); renderList(); renderRate(); renderBalance();
       busy = false; $("impCancel").disabled = false;
@@ -571,7 +624,7 @@ ul.rows li:last-child { border-bottom: 0; }
     }
   };
 
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeTx(); closeSettings(); closeImp(); } });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") { closeTx(); closeSettings(); closeImp(); if (!$("nameForm").hidden) closeName(); } });
 
   loadAll();
   renderOwner(); renderRate(); renderBalance(); renderList();
