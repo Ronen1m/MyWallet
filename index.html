@@ -229,6 +229,7 @@ ul.rows li:last-child { border-bottom: 0; }
   <section class="hero" aria-live="polite">
     <div class="label">יש לך בארנק</div>
     <div class="balance" id="balance"><span class="cur">₪</span><span id="balNum">0.00</span></div>
+    <div class="sub" id="dailyLine">רווח תשואה יומי: <b>₪0.00</b></div>
     <div class="sub" id="interestLine">רווח מתשואה עד עכשיו: <b>₪0.00</b></div>
   </section>
 
@@ -320,6 +321,9 @@ ul.rows li:last-child { border-bottom: 0; }
   const $ = (id) => document.getElementById(id);
   const fmt = (n) => new Intl.NumberFormat("he-IL", { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
   const fmtShek = (n) => (n < 0 ? "−₪" : "₪") + fmt(Math.abs(n));
+  // amounts under ₪1 (like a daily yield) get up to 4 decimals so they don't show as ₪0.00
+  const fmtSmallNum = new Intl.NumberFormat("he-IL", { minimumFractionDigits: 2, maximumFractionDigits: 4 });
+  const fmtShekSmall = (n) => Math.abs(n) >= 1 ? fmtShek(n) : (n < 0 ? "−₪" : "₪") + fmtSmallNum.format(Math.abs(n));
   const dateFmt = new Intl.DateTimeFormat("he-IL", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
   // checkpoint: balance known at time `at`, growing at `rate` % per year (compound) from then
@@ -367,6 +371,12 @@ ul.rows li:last-child { border-bottom: 0; }
     $("balNum").textContent = fmt(Math.abs(v));
     $("balance").querySelector(".cur").textContent = v < 0 ? "−₪" : "₪";
     $("balance").classList.toggle("neg", v < 0);
+    // daily yield at the current balance: the same compound rate over one day (year = 365.25 days)
+    const daily = v * (Math.pow(1 + state.rate / 100, 1 / 365.25) - 1);
+    $("dailyLine").innerHTML = "";
+    $("dailyLine").append("רווח תשואה יומי: ");
+    const db = document.createElement("b"); db.textContent = fmtShekSmall(daily);
+    $("dailyLine").append(db);
     const interest = v - state.principal;
     $("interestLine").innerHTML = "";
     $("interestLine").append("רווח מתשואה עד עכשיו: ");
